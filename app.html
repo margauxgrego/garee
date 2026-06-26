@@ -127,6 +127,14 @@
   <div class="acts"><button class="sec" id="f_cancel">Annuler</button><button class="pri" id="f_save">Enregistrer</button></div>
 </div>
 
+<div class="ov" id="confirm" style="z-index:46;justify-content:center;align-items:center;text-align:center">
+  <div style="max-width:320px;width:100%;display:flex;flex-direction:column;gap:14px">
+    <h2 style="margin-bottom:0">Remplacer ta place ?</h2>
+    <p class="sub" style="margin-bottom:6px">Tu as déjà une place enregistrée. Si tu confirmes, l'ancienne sera perdue.</p>
+    <div class="acts"><button class="sec" id="c_cancel">Annuler</button><button class="pri" id="c_ok">Remplacer</button></div>
+  </div>
+</div>
+
 <div class="top"><span class="dot">P</span>
   <div><h1>Garée</h1><div class="hello" id="hello"></div></div>
   <span class="tag">où suis-je</span></div>
@@ -178,6 +186,17 @@ function getSpot(){try{const r=localStorage.getItem('spot');return r?JSON.parse(
 function save(s){try{localStorage.setItem('spot',JSON.stringify(s))}catch(e){}render();}
 function del(){try{localStorage.removeItem('spot')}catch(e){}render();}
 
+// confirme seulement si une place existe déjà
+function confirmReplace(){
+  return new Promise(res=>{
+    if(!getSpot()){res(true);return;}
+    const ov=$('#confirm');ov.classList.add('show');
+    const done=v=>{ov.classList.remove('show');$('#c_ok').onclick=null;$('#c_cancel').onclick=null;res(v);};
+    $('#c_ok').onclick=()=>done(true);
+    $('#c_cancel').onclick=()=>done(false);
+  });
+}
+
 function render(){const box=$('#saved');const s=getSpot();
   if(!s){box.innerHTML='<div class="none">Aucune place enregistrée.<br><b>Appuie sur le bouton</b> en sortant de la voiture.</div>';return;}
   let head,actions='';
@@ -218,7 +237,8 @@ async function reverse(lat,lng){try{
 }catch(e){return null;}}
 
 /* ---- GPS ---- */
-$('#park').onclick=()=>{
+$('#park').onclick=async()=>{
+  if(!await confirmReplace())return;
   const btn=$('#park');btn.classList.add('busy');$('#big').textContent='Localisation…';
   const reset=()=>{btn.classList.remove('busy');$('#big').textContent='Enregistrer ma place';};
   const s={ts:Date.now(),mode:'gps',lat:null,lng:null,addr:null};
@@ -232,10 +252,11 @@ $('#park').onclick=()=>{
 /* ---- Parking souterrain ---- */
 $('#under').onclick=()=>{['f_name','f_niv','f_zone','f_allee','f_place'].forEach(i=>$('#'+i).value='');$('#form').classList.add('show');};
 $('#f_cancel').onclick=()=>$('#form').classList.remove('show');
-$('#f_save').onclick=()=>{
+$('#f_save').onclick=async()=>{
   const s={ts:Date.now(),mode:'under',pname:$('#f_name').value.trim(),niv:$('#f_niv').value.trim(),
     zone:$('#f_zone').value.trim(),allee:$('#f_allee').value.trim(),place:$('#f_place').value.trim()};
   if(!s.pname&&!s.niv&&!s.zone&&!s.allee&&!s.place){toast('Remplis au moins un champ',true);return;}
+  if(!await confirmReplace())return;
   save(s);$('#form').classList.remove('show');toast('Place enregistrée ✓');
 };
 
