@@ -1,167 +1,284 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta http-equiv="Pragma" content="no-cache">
-<meta http-equiv="Expires" content="0">
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700<title>display=swap" rel="stylesheet"><title>Garée</title>
+<meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<title>Garée</title>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#ffffff">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Garée">
-<link rel="apple-touch-icon" href="icon-180.png">
-<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-180.png"><link rel="icon" href="icon-192.png">
 <style>
-  :root{
-    --bg:#ffffff;--ink:#15151c;--soft:#6b6b78;--hair:#ececf1;--card:#f7f7fa;
-    --g1:#ff4dd8;--g2:#7b5cff;--g3:#22d3ee;--ok:#0bb87f;--bad:#e23d5b;
-  }
+  :root{--bg:#fff;--ink:#15151c;--soft:#6b6b78;--hair:#ececf1;--card:#f7f7fa;
+    --g1:#ff4dd8;--g2:#7b5cff;--g3:#22d3ee;--ok:#0bb87f;--bad:#e23d5b;}
   *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
   html,body{height:100%}
-  body{background:var(--bg);color:var(--ink);
-    font-family:'Space Grotesk',system-ui,sans-serif;
+  body{background:var(--bg);color:var(--ink);font-family:'Space Grotesk',system-ui,sans-serif;
     display:flex;flex-direction:column;align-items:center;
-    padding:28px 18px calc(24px + env(safe-area-inset-bottom));min-height:100%;}
+    padding:24px 18px calc(24px + env(safe-area-inset-bottom));min-height:100%}
   .top{width:100%;max-width:460px;display:flex;align-items:center;gap:10px}
-  .dot{width:30px;height:30px;border-radius:9px;
-    background:linear-gradient(135deg,var(--g1),var(--g2) 55%,var(--g3));
-    display:grid;place-items:center;color:#fff;font-weight:800;font-size:17px}
-  .top h1{font-size:19px;font-weight:800;letter-spacing:-.02em}
-  .top .tag{margin-left:auto;font-size:11px;color:var(--soft);font-weight:600;text-transform:uppercase;letter-spacing:.12em}
-  .wrap{width:100%;max-width:460px;flex:1;display:flex;flex-direction:column;gap:16px;margin-top:18px}
+  .dot{width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,var(--g1),var(--g2) 55%,var(--g3));
+    display:grid;place-items:center;color:#fff;font-weight:700;font-size:17px}
+  .top h1{font-size:19px;font-weight:700;letter-spacing:-.02em}
+  .hello{font-size:12px;color:var(--soft);font-weight:600;margin-top:1px}
+  .top .tag{margin-left:auto;font-size:11px;color:var(--soft);font-weight:600;text-transform:uppercase;letter-spacing:.1em}
+  .wrap{width:100%;max-width:460px;flex:1;display:flex;flex-direction:column;gap:14px;margin-top:18px}
 
-  .park{position:relative;border:none;cursor:pointer;color:#fff;
-    background:linear-gradient(135deg,var(--g1),var(--g2) 55%,var(--g3));
-    border-radius:24px;padding:32px 22px;font-family:inherit;text-align:left;overflow:hidden;
-    box-shadow:0 18px 40px -16px #7b5cff80;transition:transform .12s;}
+  .park{position:relative;border:none;cursor:pointer;color:#fff;font-family:inherit;text-align:left;overflow:hidden;
+    background:linear-gradient(135deg,var(--g1),var(--g2) 55%,var(--g3));border-radius:24px;padding:30px 22px;
+    box-shadow:0 18px 40px -16px #7b5cff80;transition:transform .12s}
   .park:active{transform:scale(.985)}
   .park.busy{opacity:.75;pointer-events:none}
-  .park .lbl{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.14em;opacity:.9}
-  .park .big{font-size:28px;font-weight:800;letter-spacing:-.03em;margin-top:5px}
-  .park .glow{position:absolute;right:-30px;top:-30px;width:160px;height:160px;border-radius:50%;
-    background:#ffffff55;filter:blur(34px)}
+  .park .lbl{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.13em;opacity:.9}
+  .park .big{font-size:27px;font-weight:700;letter-spacing:-.03em;margin-top:5px}
+  .park .glow{position:absolute;right:-30px;top:-30px;width:160px;height:160px;border-radius:50%;background:#ffffff55;filter:blur(34px)}
+
+  .alt{display:flex;gap:10px}
+  .alt button{flex:1;border:1px solid var(--hair);background:#fff;color:var(--ink);font-family:inherit;
+    font-weight:600;font-size:14px;border-radius:16px;padding:15px 12px;cursor:pointer;display:flex;
+    align-items:center;justify-content:center;gap:8px}
+  .alt button:active{background:var(--card)}
+  .alt svg{width:18px;height:18px}
 
   .saved{background:var(--card);border-radius:24px;border:1px solid var(--hair)}
-  .none{padding:34px 22px;text-align:center;color:var(--soft);font-size:14px;line-height:1.5}
+  .none{padding:30px 22px;text-align:center;color:var(--soft);font-size:14px;line-height:1.5}
   .none b{color:var(--ink)}
-  .meta{padding:22px 20px;display:flex;flex-direction:column;gap:12px}
-  .when{font-size:12px;color:var(--soft);font-weight:600;letter-spacing:.02em}
-  .addr{font-size:21px;font-weight:800;letter-spacing:-.02em;line-height:1.25}
-  .gpsbad{font-size:13px;color:var(--bad);font-weight:700}
-  .row{display:flex;gap:10px;margin-top:6px}
-  .row a,.row button{text-decoration:none;text-align:center;border-radius:14px;
-    padding:14px;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;border:none;
-    display:flex;align-items:center;justify-content:center}
+  .meta{padding:20px;display:flex;flex-direction:column;gap:12px}
+  .when{font-size:12px;color:var(--soft);font-weight:600}
+  .addr{font-size:21px;font-weight:700;letter-spacing:-.02em;line-height:1.25}
+  .tags{display:flex;flex-wrap:wrap;gap:8px}
+  .chip{background:#fff;border:1px solid var(--hair);border-radius:10px;padding:7px 11px;font-size:13px;font-weight:600}
+  .chip b{color:var(--g2)}
+  .gpsbad{font-size:13px;color:var(--bad);font-weight:600}
+  .row{display:flex;gap:10px;margin-top:4px}
+  .row a,.row button{text-decoration:none;text-align:center;border-radius:14px;padding:14px;font-family:inherit;
+    font-size:14px;font-weight:700;cursor:pointer;border:none;display:flex;align-items:center;justify-content:center}
   .map{flex:1;background:var(--ink);color:#fff}
   .share{width:50px;flex:none;background:linear-gradient(135deg,var(--g1),var(--g2) 55%,var(--g3));color:#fff}
   .share svg,.del svg{width:20px;height:20px}
   .del{width:50px;flex:none;background:#fff;color:var(--bad);border:1px solid var(--hair)}
-  #toast{position:fixed;left:50%;bottom:calc(28px + env(safe-area-inset-bottom));transform:translate(-50%,20px);
-    background:#15151c;color:#fff;font-size:14px;font-weight:700;padding:13px 20px;border-radius:14px;
-    box-shadow:0 12px 30px -10px #00000055;opacity:0;pointer-events:none;transition:.25s;white-space:nowrap;z-index:9}
-  #toast.show{opacity:1;transform:translate(-50%,0)}
-  #toast.bad{background:var(--bad)}
 
-  #splash{position:fixed;inset:0;z-index:50;background:#fff;
-    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;
-    transition:opacity .5s ease;}
+  /* minuteur */
+  .timer{background:var(--card);border:1px solid var(--hair);border-radius:24px;padding:20px;display:flex;flex-direction:column;gap:12px}
+  .timer .ttl{font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:var(--soft);font-weight:700}
+  .timer .cd{font-size:30px;font-weight:700;letter-spacing:-.02em}
+  .timer .cd.warn{color:#e08600}.timer .cd.over{color:var(--bad)}
+  .presets{display:flex;gap:8px;flex-wrap:wrap}
+  .presets button{flex:1;min-width:64px;border:1px solid var(--hair);background:#fff;font-family:inherit;font-weight:600;
+    font-size:14px;border-radius:12px;padding:11px 8px;cursor:pointer}
+  .presets button:active{background:var(--card)}
+  .tstop{border:none;background:#fff;color:var(--bad);border:1px solid var(--hair);border-radius:12px;padding:12px;font-family:inherit;font-weight:700;cursor:pointer}
+
+  /* overlays */
+  .ov{position:fixed;inset:0;z-index:40;background:#fff;display:none;flex-direction:column;padding:28px 22px calc(28px + env(safe-area-inset-bottom));overflow:auto}
+  .ov.show{display:flex}
+  .ov h2{font-size:23px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
+  .ov p.sub{font-size:14px;color:var(--soft);margin-bottom:18px;line-height:1.5}
+  .field{margin-bottom:14px}
+  .field label{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--soft);font-weight:700;margin-bottom:6px}
+  .field input{width:100%;font-family:inherit;font-size:18px;font-weight:600;padding:13px 14px;border:1px solid var(--hair);border-radius:13px;outline:none;color:var(--ink)}
+  .field input:focus{border-color:var(--g2)}
+  .ov .acts{display:flex;gap:10px;margin-top:8px}
+  .ov .acts button{flex:1;border:none;font-family:inherit;font-weight:700;font-size:16px;padding:15px;border-radius:14px;cursor:pointer}
+  .pri{color:#fff;background:linear-gradient(135deg,var(--g1),var(--g2) 55%,var(--g3))}
+  .sec{background:#fff;color:var(--soft);border:1px solid var(--hair)}
+
+  #splash{position:fixed;inset:0;z-index:50;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;transition:opacity .5s ease}
   #splash.hide{opacity:0;pointer-events:none}
-  #splash img{width:108px;height:108px;border-radius:27px;
-    box-shadow:0 20px 44px -14px #7b5cff70;animation:pop .6s ease both}
-  #splash .mg{font-size:13px;font-weight:800;letter-spacing:.28em;
-    background:linear-gradient(135deg,var(--g1),var(--g2) 55%,var(--g3));
-    -webkit-background-clip:text;background-clip:text;color:transparent;
-    position:absolute;bottom:calc(40px + env(safe-area-inset-bottom));animation:fade .8s ease both .2s}
+  #splash img{width:108px;height:108px;border-radius:27px;box-shadow:0 20px 44px -14px #7b5cff70;animation:pop .6s ease both}
+  #splash .mg{font-size:13px;font-weight:700;letter-spacing:.28em;background:linear-gradient(135deg,var(--g1),var(--g2) 55%,var(--g3));-webkit-background-clip:text;background-clip:text;color:transparent;position:absolute;bottom:calc(40px + env(safe-area-inset-bottom));animation:fade .8s ease both .2s}
   @keyframes pop{from{transform:scale(.7);opacity:0}to{transform:scale(1);opacity:1}}
   @keyframes fade{from{opacity:0}to{opacity:1}}
+
+  #ask{position:fixed;inset:0;z-index:45;background:#fff;display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:28px;text-align:center}
+  #ask.show{display:flex}
+  #ask h2{font-size:24px;font-weight:700;letter-spacing:-.02em}
+  #ask p{font-size:14px;color:var(--soft);max-width:280px;line-height:1.5}
+  #ask input{width:100%;max-width:300px;text-align:center;font-family:inherit;font-size:20px;font-weight:600;padding:14px;border:1px solid var(--hair);border-radius:14px;outline:none;color:var(--ink)}
+  #ask input:focus{border-color:var(--g2)}
+  #ask button{width:100%;max-width:300px;border:none;color:#fff;font-family:inherit;font-weight:700;font-size:16px;padding:15px;border-radius:14px;cursor:pointer;background:linear-gradient(135deg,var(--g1),var(--g2) 55%,var(--g3))}
+
+  #toast{position:fixed;left:50%;bottom:calc(28px + env(safe-area-inset-bottom));transform:translate(-50%,20px);background:#15151c;color:#fff;font-size:14px;font-weight:600;padding:13px 20px;border-radius:14px;box-shadow:0 12px 30px -10px #00000055;opacity:0;pointer-events:none;transition:.25s;white-space:nowrap;z-index:60}
+  #toast.show{opacity:1;transform:translate(-50%,0)}#toast.bad{background:var(--bad)}
 </style>
 
 <div id="splash"><img src="icon-512.png" alt="Garée"><span class="mg">FROM MG</span></div>
 
-<div class="top"><span class="dot">P</span><h1>Garée</h1><span class="tag">où suis-je</span></div>
+<div id="ask">
+  <h2>Bienvenue 👋</h2>
+  <p>Comment tu t'appelles ? Juste pour t'accueillir à chaque ouverture.</p>
+  <input id="name" type="text" placeholder="Ton prénom" autocomplete="given-name" maxlength="20">
+  <button id="go">C'est parti</button>
+</div>
+
+<!-- formulaire parking souterrain -->
+<div class="ov" id="form">
+  <h2>Parking souterrain</h2>
+  <p class="sub">Le GPS est souvent imprécis sous terre. Note les repères pour retrouver ta place.</p>
+  <div class="field"><label>Nom du parking</label><input id="f_name" placeholder="Parking Vélizy 2"></div>
+  <div class="field"><label>Niveau</label><input id="f_niv" placeholder="-3"></div>
+  <div class="field"><label>Zone</label><input id="f_zone" placeholder="Bleue"></div>
+  <div class="field"><label>Allée</label><input id="f_allee" placeholder="C"></div>
+  <div class="field"><label>Place</label><input id="f_place" placeholder="142"></div>
+  <div class="acts"><button class="sec" id="f_cancel">Annuler</button><button class="pri" id="f_save">Enregistrer</button></div>
+</div>
+
+<div class="top"><span class="dot">P</span>
+  <div><h1>Garée</h1><div class="hello" id="hello"></div></div>
+  <span class="tag">où suis-je</span></div>
 
 <div class="wrap">
-  <button class="park" id="park">
-    <div class="glow"></div>
-    <div class="lbl">Je me gare ici</div>
-    <div class="big" id="big">Enregistrer ma place</div>
-  </button>
+  <button class="park" id="park"><div class="glow"></div>
+    <div class="lbl">Je me gare ici</div><div class="big" id="big">Enregistrer ma place</div></button>
+
+  <div class="alt">
+    <button id="under"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V8l7-5 7 5v13M9 21v-6h6v6"/></svg>Parking souterrain</button>
+  </div>
+
   <div class="saved" id="saved">
     <div class="none">Aucune place enregistrée.<br><b>Appuie sur le bouton</b> en sortant de la voiture.</div>
+  </div>
+
+  <div class="timer" id="timer" style="display:none">
+    <div class="ttl">Minuteur de stationnement</div>
+    <div class="cd" id="cd">--:--</div>
+    <button class="tstop" id="tstop">Arrêter le minuteur</button>
+  </div>
+  <div class="timer" id="timerset">
+    <div class="ttl">Stationnement payant</div>
+    <div class="presets">
+      <button data-m="30">30 min</button><button data-m="60">1 h</button>
+      <button data-m="120">2 h</button><button data-m="240">4 h</button>
+    </div>
   </div>
 </div>
 
 <script>
 const $=s=>document.querySelector(s);
 function fmt(ts){const d=new Date(ts);
-  return d.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'})
-    +' à '+d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});}
-async function load(){let s=null;
-  try{const r=localStorage.getItem('spot');s=r?JSON.parse(r):null;}catch(e){}
-  render(s);}
-function render(s){const box=$('#saved');
+  return d.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'})+' à '+d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});}
+
+/* ---- place enregistrée ---- */
+function getSpot(){try{const r=localStorage.getItem('spot');return r?JSON.parse(r):null;}catch(e){return null;}}
+function save(s){try{localStorage.setItem('spot',JSON.stringify(s))}catch(e){}render();}
+function del(){try{localStorage.removeItem('spot')}catch(e){}render();}
+
+function render(){const box=$('#saved');const s=getSpot();
   if(!s){box.innerHTML='<div class="none">Aucune place enregistrée.<br><b>Appuie sur le bouton</b> en sortant de la voiture.</div>';return;}
-  if(s.lat==null){box.innerHTML=`<div class="meta"><div class="when">${fmt(s.ts)}</div>
-    <div class="gpsbad">GPS indisponible — autorise la localisation</div>
-    <div class="row"><button class="del" id="del" style="width:100%" aria-label="Supprimer">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg></button></div></div>`;$('#del').onclick=del;return;}
-  const lieu=s.addr||`${s.lat.toFixed(5)}, ${s.lng.toFixed(5)}`;
-  box.innerHTML=`<div class="meta">
-      <div class="when">Garée ${fmt(s.ts)}</div>
-      <div class="addr">${lieu}</div>
-      <div class="row">
-        <a class="map" href="https://www.google.com/maps/search/?api=1&query=${s.lat},${s.lng}" target="_blank">M'y ramener</a>
-        <button class="share" id="share" aria-label="Partager">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg>
-        </button>
-        <button class="del" id="del" aria-label="Supprimer">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg>
-        </button></div></div>`;
-  $('#del').onclick=del;
-  $('#share').onclick=()=>share(s);}
-async function del(){try{localStorage.removeItem('spot')}catch(e){}render(null);}
+  let head,actions='';
+  if(s.mode==='under'){
+    const chips=[['Niveau',s.niv],['Zone',s.zone],['Allée',s.allee],['Place',s.place]]
+      .filter(c=>c[1]).map(c=>`<span class="chip"><b>${c[0]}</b> ${c[1]}</span>`).join('');
+    head=`<div class="addr">${s.pname||'Parking souterrain'}</div>${chips?`<div class="tags">${chips}</div>`:''}`;
+  }else if(s.lat!=null){
+    const lieu=s.addr||`${s.lat.toFixed(5)}, ${s.lng.toFixed(5)}`;
+    head=`<div class="addr">${lieu}</div>`;
+    actions=`<a class="map" href="https://www.google.com/maps/search/?api=1&query=${s.lat},${s.lng}" target="_blank">M'y ramener</a>`;
+  }else{head=`<div class="gpsbad">GPS indisponible — autorise la localisation</div>`;}
+  box.innerHTML=`<div class="meta"><div class="when">Garée ${fmt(s.ts)}</div>${head}
+    <div class="row">${actions}
+      <button class="share" id="share" aria-label="Partager"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg></button>
+      <button class="del" id="del" aria-label="Supprimer"${actions?'':' style="flex:1;width:auto"'}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg></button>
+    </div></div>`;
+  $('#del').onclick=del;$('#share').onclick=()=>share(s);}
+
 async function share(s){
-  const url=`https://www.google.com/maps/search/?api=1&query=${s.lat},${s.lng}`;
-  const lieu=s.addr||`${s.lat.toFixed(5)}, ${s.lng.toFixed(5)}`;
-  const text=`Je suis garée ici : ${lieu}\n${url}`;
-  if(navigator.share){try{await navigator.share({title:'Ma place de parking',text,url});return;}catch(e){if(e.name==='AbortError')return;}}
-  try{await navigator.clipboard.writeText(text);toast('Lien copié ✓');}
-  catch(e){location.href=`sms:?&body=${encodeURIComponent(text)}`;}
+  let text;
+  if(s.mode==='under'){
+    const parts=[s.pname,s.niv&&'Niveau '+s.niv,s.zone&&'Zone '+s.zone,s.allee&&'Allée '+s.allee,s.place&&'Place '+s.place].filter(Boolean);
+    text='Je suis garée : '+parts.join(' · ');
+  }else{
+    const url=`https://www.google.com/maps/search/?api=1&query=${s.lat},${s.lng}`;
+    text=`Je suis garée ici : ${s.addr||''}\n${url}`.trim();
+  }
+  if(navigator.share){try{await navigator.share({title:'Ma place de parking',text});return;}catch(e){if(e.name==='AbortError')return;}}
+  try{await navigator.clipboard.writeText(text);toast('Copié ✓');}catch(e){location.href=`sms:?&body=${encodeURIComponent(text)}`;}
 }
-function save(s){try{localStorage.setItem('spot',JSON.stringify(s))}catch(e){}render(s);}
+
 async function reverse(lat,lng){try{
   const r=await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`,{headers:{'Accept':'application/json'}});
   const j=await r.json();const a=j.address||{};
   const street=[a.house_number,a.road].filter(Boolean).join(' ');
   return [street,a.city||a.town||a.village||a.suburb].filter(Boolean).join(', ')||j.display_name;
 }catch(e){return null;}}
+
+/* ---- GPS ---- */
 $('#park').onclick=()=>{
   const btn=$('#park');btn.classList.add('busy');$('#big').textContent='Localisation…';
   const reset=()=>{btn.classList.remove('busy');$('#big').textContent='Enregistrer ma place';};
-  const s={ts:Date.now(),lat:null,lng:null,acc:null,addr:null};
+  const s={ts:Date.now(),mode:'gps',lat:null,lng:null,addr:null};
   if(!navigator.geolocation){reset();save(s);return;}
   navigator.geolocation.getCurrentPosition(async p=>{
-    s.lat=p.coords.latitude;s.lng=p.coords.longitude;s.acc=p.coords.accuracy;save(s);toast('Position enregistrée ✓');
+    s.lat=p.coords.latitude;s.lng=p.coords.longitude;save(s);toast('Position enregistrée ✓');
     s.addr=await reverse(s.lat,s.lng);reset();save(s);
   },()=>{reset();save(s);toast('GPS indisponible',true);},{enableHighAccuracy:true,timeout:8000});
 };
+
+/* ---- Parking souterrain ---- */
+$('#under').onclick=()=>{['f_name','f_niv','f_zone','f_allee','f_place'].forEach(i=>$('#'+i).value='');$('#form').classList.add('show');};
+$('#f_cancel').onclick=()=>$('#form').classList.remove('show');
+$('#f_save').onclick=()=>{
+  const s={ts:Date.now(),mode:'under',pname:$('#f_name').value.trim(),niv:$('#f_niv').value.trim(),
+    zone:$('#f_zone').value.trim(),allee:$('#f_allee').value.trim(),place:$('#f_place').value.trim()};
+  if(!s.pname&&!s.niv&&!s.zone&&!s.allee&&!s.place){toast('Remplis au moins un champ',true);return;}
+  save(s);$('#form').classList.remove('show');toast('Place enregistrée ✓');
+};
+
+/* ---- Minuteur de stationnement ---- */
+let tick;
+function getExp(){const v=localStorage.getItem('exp');return v?+v:0;}
+function setTimer(min){
+  const exp=Date.now()+min*60000;localStorage.setItem('exp',exp);
+  if('Notification'in window&&Notification.permission==='default')Notification.requestPermission();
+  scheduleNotif(exp);renderTimer();toast(`Minuteur lancé : ${min} min`);
+}
+function stopTimer(){localStorage.removeItem('exp');clearTimeout(window._n15);clearTimeout(window._n0);renderTimer();}
+function scheduleNotif(exp){
+  clearTimeout(window._n15);clearTimeout(window._n0);
+  const t15=exp-15*60000-Date.now(),t0=exp-Date.now();
+  if(t15>0)window._n15=setTimeout(()=>notify('Ton stationnement expire dans 15 minutes.'),t15);
+  if(t0>0)window._n0=setTimeout(()=>notify('Ton stationnement a expiré.'),t0);
+}
+function notify(msg){
+  if('Notification'in window&&Notification.permission==='granted'){new Notification('Garée',{body:msg,icon:'icon-192.png'});}
+  toast(msg,true);
+}
+function renderTimer(){
+  const exp=getExp();const set=$('#timerset'),box=$('#timer'),cd=$('#cd');
+  if(!exp){box.style.display='none';set.style.display='';return;}
+  box.style.display='';set.style.display='none';
+  clearInterval(tick);
+  const upd=()=>{let ms=exp-Date.now();
+    if(ms<=0){cd.textContent='Expiré';cd.className='cd over';return;}
+    const m=Math.floor(ms/60000),sec=Math.floor(ms/1000)%60;
+    cd.textContent=String(m).padStart(2,'0')+':'+String(sec).padStart(2,'0');
+    cd.className='cd'+(m<15?' warn':'');};
+  upd();tick=setInterval(upd,1000);
+}
+document.querySelectorAll('.presets button').forEach(b=>b.onclick=()=>setTimer(+b.dataset.m));
+$('#tstop').onclick=stopTimer;
+
+/* ---- Prénom + accueil ---- */
+function greet(n){if(n)$('#hello').textContent='Bonjour '+n+' 👋';}
+(function(){const n=localStorage.getItem('name');
+  if(n){greet(n);}else{setTimeout(()=>$('#ask').classList.add('show'),2100);}})();
+$('#go').onclick=()=>{const v=$('#name').value.trim();if(!v){$('#name').focus();return;}
+  localStorage.setItem('name',v);greet(v);$('#ask').classList.remove('show');};
+$('#name').addEventListener('keydown',e=>{if(e.key==='Enter')$('#go').click();});
+
 let toastT;
 function toast(msg,bad){let t=$('#toast');
   if(!t){t=document.createElement('div');t.id='toast';document.body.appendChild(t);}
   t.textContent=msg;t.className=bad?'bad':'';t.classList.add('show');
   clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),2200);}
-load();
+
+render();renderTimer();
+{const e=getExp();if(e)scheduleNotif(e);}
 setTimeout(()=>{const sp=$('#splash');sp.classList.add('hide');setTimeout(()=>sp.remove(),600);},2000);
 
-// service worker : maj auto à chaque nouvelle version
-if('serviceWorker' in navigator){
-  navigator.serviceWorker.register('sw.js').then(reg=>{
-    reg.addEventListener('updatefound',()=>{
-      const sw=reg.installing;
-      sw&&sw.addEventListener('statechange',()=>{
-        if(sw.state==='activated') location.reload();
-      });
-    });
-    reg.update();
-  }).catch(()=>{});
-}
+if('serviceWorker'in navigator){navigator.serviceWorker.register('sw.js').then(reg=>{
+  reg.addEventListener('updatefound',()=>{const sw=reg.installing;
+    sw&&sw.addEventListener('statechange',()=>{if(sw.state==='activated')location.reload();});});
+  reg.update();}).catch(()=>{});}
 </script>
