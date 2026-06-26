@@ -49,6 +49,11 @@
     padding:14px;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;border:none}
   .map{background:var(--ink);color:#fff}
   .del{background:#fff;color:var(--bad);border:1px solid var(--hair)}
+  #toast{position:fixed;left:50%;bottom:calc(28px + env(safe-area-inset-bottom));transform:translate(-50%,20px);
+    background:#15151c;color:#fff;font-size:14px;font-weight:700;padding:13px 20px;border-radius:14px;
+    box-shadow:0 12px 30px -10px #00000055;opacity:0;pointer-events:none;transition:.25s;white-space:nowrap;z-index:9}
+  #toast.show{opacity:1;transform:translate(-50%,0)}
+  #toast.bad{background:var(--bad)}
 </style>
 
 <div class="top"><span class="dot">P</span><h1>Garée</h1><span class="tag">où suis-je</span></div>
@@ -99,9 +104,14 @@ $('#park').onclick=()=>{
   const s={ts:Date.now(),lat:null,lng:null,acc:null,addr:null};
   if(!navigator.geolocation){reset();save(s);return;}
   navigator.geolocation.getCurrentPosition(async p=>{
-    s.lat=p.coords.latitude;s.lng=p.coords.longitude;s.acc=p.coords.accuracy;save(s);
+    s.lat=p.coords.latitude;s.lng=p.coords.longitude;s.acc=p.coords.accuracy;save(s);toast('Position enregistrée ✓');
     s.addr=await reverse(s.lat,s.lng);reset();save(s);
-  },()=>{reset();save(s);},{enableHighAccuracy:true,timeout:8000});
+  },()=>{reset();save(s);toast('GPS indisponible',true);},{enableHighAccuracy:true,timeout:8000});
 };
+let toastT;
+function toast(msg,bad){let t=$('#toast');
+  if(!t){t=document.createElement('div');t.id='toast';document.body.appendChild(t);}
+  t.textContent=msg;t.className=bad?'bad':'';t.classList.add('show');
+  clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),2200);}
 load();
 </script>
