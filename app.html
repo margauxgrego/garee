@@ -186,15 +186,23 @@ function getSpot(){try{const r=localStorage.getItem('spot');return r?JSON.parse(
 function save(s){try{localStorage.setItem('spot',JSON.stringify(s))}catch(e){}render();}
 function del(){try{localStorage.removeItem('spot')}catch(e){}render();}
 
-// confirme seulement si une place existe déjà
-function confirmReplace(){
+// dialogue de confirmation réutilisable
+function confirmDialog(title,msg,okLabel){
   return new Promise(res=>{
-    if(!getSpot()){res(true);return;}
-    const ov=$('#confirm');ov.classList.add('show');
+    const ov=$('#confirm');
+    ov.querySelector('h2').textContent=title;
+    ov.querySelector('.sub').textContent=msg;
+    $('#c_ok').textContent=okLabel||'Confirmer';
+    ov.classList.add('show');
     const done=v=>{ov.classList.remove('show');$('#c_ok').onclick=null;$('#c_cancel').onclick=null;res(v);};
     $('#c_ok').onclick=()=>done(true);
     $('#c_cancel').onclick=()=>done(false);
   });
+}
+// confirme seulement si une place existe déjà
+function confirmReplace(){
+  if(!getSpot())return Promise.resolve(true);
+  return confirmDialog('Remplacer ta place ?',"Tu as déjà une place enregistrée. Si tu confirmes, l'ancienne sera perdue.",'Remplacer');
 }
 
 function render(){const box=$('#saved');const s=getSpot();
@@ -214,7 +222,8 @@ function render(){const box=$('#saved');const s=getSpot();
       <button class="share" id="share" aria-label="Partager"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg></button>
       <button class="del" id="del" aria-label="Supprimer"${actions?'':' style="flex:1;width:auto"'}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg></button>
     </div></div>`;
-  $('#del').onclick=del;$('#share').onclick=()=>share(s);}
+  $('#del').onclick=async()=>{if(await confirmDialog('Supprimer la place ?','Tu ne pourras plus retrouver cet emplacement.','Supprimer'))del();};
+  $('#share').onclick=()=>share(s);}
 
 async function share(s){
   let text;
@@ -312,7 +321,7 @@ function renderTimer(){
   upd();tick=setInterval(upd,1000);
 }
 document.querySelectorAll('.presets button').forEach(b=>b.onclick=()=>setTimer(+b.dataset.m));
-$('#tstop').onclick=stopTimer;
+$('#tstop').onclick=async()=>{if(await confirmDialog('Arrêter le minuteur ?','Le compte à rebours et les rappels seront annulés.','Arrêter'))stopTimer();};
 
 // mode personnalisé (heure de début / fin)
 $('#tcustom').onclick=()=>{
