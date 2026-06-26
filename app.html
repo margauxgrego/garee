@@ -1,5 +1,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<title>Garée</title>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700<title>display=swap" rel="stylesheet"><title>Garée</title>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#ffffff">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -15,7 +18,7 @@
   *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
   html,body{height:100%}
   body{background:var(--bg);color:var(--ink);
-    font-family:'SF Pro Display',system-ui,sans-serif;
+    font-family:'Space Grotesk',system-ui,sans-serif;
     display:flex;flex-direction:column;align-items:center;
     padding:28px 18px calc(24px + env(safe-area-inset-bottom));min-height:100%;}
   .top{width:100%;max-width:460px;display:flex;align-items:center;gap:10px}
@@ -148,4 +151,17 @@ function toast(msg,bad){let t=$('#toast');
   clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),2200);}
 load();
 setTimeout(()=>{const sp=$('#splash');sp.classList.add('hide');setTimeout(()=>sp.remove(),600);},2000);
+
+// service worker : maj auto à chaque nouvelle version
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('sw.js').then(reg=>{
+    reg.addEventListener('updatefound',()=>{
+      const sw=reg.installing;
+      sw&&sw.addEventListener('statechange',()=>{
+        if(sw.state==='activated') location.reload();
+      });
+    });
+    reg.update();
+  }).catch(()=>{});
+}
 </script>
