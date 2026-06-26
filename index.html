@@ -1,6 +1,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <title>Installer Garée</title>
 <meta name="theme-color" content="#ffffff">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Garée">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="icon-192.png">
+<link rel="manifest" href="manifest.json">
 <style>
   :root{--ink:#15151c;--soft:#6b6b78;--hair:#ececf1;--card:#f7f7fa;
     --g1:#ff4dd8;--g2:#7b5cff;--g3:#22d3ee;}
@@ -13,21 +18,21 @@
   .icon{width:104px;height:104px;border-radius:26px;box-shadow:0 18px 40px -14px #7b5cff66}
   h1{font-size:26px;font-weight:800;letter-spacing:-.03em}
   .sub{font-size:15px;color:var(--soft);line-height:1.5;max-width:300px}
-  .btn{width:100%;border:none;cursor:pointer;color:#fff;font-family:inherit;
+  .btn{width:100%;border:none;cursor:pointer;color:#fff;font-family:inherit;text-decoration:none;display:block;
     background:linear-gradient(135deg,var(--g1),var(--g2) 55%,var(--g3));
     border-radius:18px;padding:18px;font-size:16px;font-weight:800;
     box-shadow:0 16px 36px -14px #7b5cff90;transition:transform .12s;margin-top:4px}
   .btn:active{transform:scale(.98)}
-  .open{background:#fff;color:var(--ink);border:1px solid var(--hair);box-shadow:none}
+  .ghost{background:#fff;color:var(--soft);border:1px solid var(--hair);box-shadow:none;font-weight:700}
   .steps{width:100%;background:var(--card);border:1px solid var(--hair);border-radius:18px;
     padding:18px 20px;text-align:left;display:none}
   .steps.show{display:block}
   .steps h2{font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:var(--soft);margin-bottom:12px}
-  .step{display:flex;gap:12px;align-items:flex-start;padding:8px 0;font-size:14px;line-height:1.4}
+  .step{display:flex;gap:12px;align-items:flex-start;padding:8px 0;font-size:14px;line-height:1.45}
   .num{flex:none;width:24px;height:24px;border-radius:8px;background:#15151c;color:#fff;
     font-size:13px;font-weight:800;display:grid;place-items:center}
   .share{display:inline-flex;width:20px;height:20px;vertical-align:-4px;margin:0 2px}
-  .hint{font-size:12px;color:var(--soft);margin-top:2px}
+  .hint{font-size:12px;color:var(--soft);margin-top:6px;line-height:1.4}
 </style>
 
 <div class="card">
@@ -37,23 +42,23 @@
     <p class="sub">Un appui pour enregistrer où tu t'es garée. Retrouve ta voiture en un instant.</p>
   </div>
 
-  <button class="btn" id="install">Télécharger l'app</button>
-  <a class="btn open" href="app.html">Ouvrir sans installer</a>
+  <a class="btn" id="install" href="app.html">Télécharger l'app</a>
+  <a class="btn ghost" href="app.html">Juste l'ouvrir une fois</a>
 
   <div class="steps" id="ios">
-    <h2>Installer sur iPhone (Safari)</h2>
-    <div class="step"><span class="num">1</span><div>Touche l'icône <b>Partager</b>
+    <h2>Installer sur iPhone</h2>
+    <div class="step"><span class="num">1</span><div>L'app vient de s'ouvrir. Touche l'icône <b>Partager</b>
       <svg class="share" viewBox="0 0 24 24" fill="none" stroke="#15151c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M8 8l4-4 4 4"/><path d="M5 12v7a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-7"/></svg>
-      en bas de l'écran.</div></div>
-    <div class="step"><span class="num">2</span><div>Fais défiler et choisis <b>Sur l'écran d'accueil</b>.</div></div>
-    <div class="step"><span class="num">3</span><div>Touche <b>Ajouter</b>. L'icône voiture apparaît sur ton écran.</div></div>
-    <p class="hint">Si tu es dans une autre app (Instagram, Gmail…), ouvre d'abord ce lien dans <b>Safari</b>.</p>
+      en bas de Safari.</div></div>
+    <div class="step"><span class="num">2</span><div>Choisis <b>Sur l'écran d'accueil</b>.</div></div>
+    <div class="step"><span class="num">3</span><div>Touche <b>Ajouter</b> : l'icône voiture apparaît, l'app s'ouvre en plein écran.</div></div>
+    <p class="hint">Important : ouvre ce lien dans <b>Safari</b> (pas Instagram/Gmail), sinon « Sur l'écran d'accueil » n'apparaît pas.</p>
   </div>
 
   <div class="steps" id="android">
     <h2>Installer sur Android</h2>
     <div class="step"><span class="num">1</span><div>Menu <b>⋮</b> de Chrome, en haut à droite.</div></div>
-    <div class="step"><span class="num">2</span><div>Choisis <b>Installer l'application</b> (ou « Ajouter à l'écran d'accueil »).</div></div>
+    <div class="step"><span class="num">2</span><div>Choisis <b>Installer l'application</b>.</div></div>
   </div>
 </div>
 
@@ -66,15 +71,21 @@ const btn=document.getElementById('install');
 
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferred=e;});
 
-btn.onclick=async()=>{
-  if(deferred){deferred.prompt();await deferred.userChoice;deferred=null;return;}
-  // pas d'install auto (surtout iOS) -> on montre les étapes
-  document.getElementById(isAndroid?'android':'ios').classList.add('show');
-  btn.scrollIntoView({behavior:'smooth',block:'center'});
-};
+btn.addEventListener('click',async e=>{
+  if(deferred){e.preventDefault();deferred.prompt();await deferred.userChoice;deferred=null;return;}
+  if(isIOS){
+    // montre les étapes puis ouvre l'app (à épingler depuis l'app)
+    e.preventDefault();
+    document.getElementById('ios').classList.add('show');
+    setTimeout(()=>{location.href='app.html';},2200);
+    return;
+  }
+  if(isAndroid){e.preventDefault();document.getElementById('android').classList.add('show');return;}
+  // desktop: laisse le lien ouvrir l'app
+});
 
-// si déjà installée, on bascule direct sur l'app
+// si lancée depuis l'écran d'accueil -> app direct
 if(window.matchMedia('(display-mode: standalone)').matches||navigator.standalone){
-  location.replace("app.html");
+  location.replace('app.html');
 }
 </script>
