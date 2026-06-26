@@ -288,7 +288,10 @@ function setTimer(min){startTimer(Date.now()+min*60000,min);}
 function startTimer(exp,totalMin){
   if(exp<=Date.now()){toast('Heure de fin déjà passée',true);return;}
   localStorage.setItem('exp',exp);localStorage.setItem('total',totalMin);
-  if('Notification'in window&&Notification.permission==='default')Notification.requestPermission();
+  if('Notification'in window){
+    if(Notification.permission==='default')Notification.requestPermission();
+    else if(Notification.permission==='denied')toast('Notifications bloquées — active-les dans Réglages',true);
+  }
   scheduleNotif(exp,totalMin);renderTimer();
   toast('Minuteur lancé jusqu’à '+new Date(exp).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}));
 }
@@ -303,8 +306,15 @@ function scheduleNotif(exp,totalMin){
   const t0=exp-Date.now();
   if(t0>0)_timeouts.push(setTimeout(()=>notify('Ton stationnement a expiré.'),t0));
 }
-function notify(msg){
-  if('Notification'in window&&Notification.permission==='granted'){new Notification('Garée',{body:msg,icon:'icon-192.png'});}
+async function notify(msg){
+  try{
+    if('serviceWorker'in navigator && 'Notification'in window && Notification.permission==='granted'){
+      const reg=await navigator.serviceWorker.ready;
+      await reg.showNotification('Garée',{body:msg,icon:'icon-192.png',badge:'icon-192.png',tag:'garee-timer'});
+    }
+  }catch(e){
+    try{if(Notification.permission==='granted')new Notification('Garée',{body:msg});}catch(_){}
+  }
   toast(msg,true);
 }
 function renderTimer(){

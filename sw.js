@@ -1,5 +1,5 @@
 // Service worker — réseau d'abord. Bump VERSION à chaque déploiement important.
-const VERSION = 'v5';
+const VERSION = 'v6';
 const CACHE = 'garee-' + VERSION;
 
 self.addEventListener('install', e => self.skipWaiting());
