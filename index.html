@@ -47,12 +47,12 @@
 
   <div class="steps" id="ios">
     <h2>Installer sur iPhone</h2>
-    <div class="step"><span class="num">1</span><div>L'app vient de s'ouvrir. Touche l'icône <b>Partager</b>
+    <div class="step"><span class="num">1</span><div>Touche l'icône <b>Partager</b>
       <svg class="share" viewBox="0 0 24 24" fill="none" stroke="#15151c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M8 8l4-4 4 4"/><path d="M5 12v7a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-7"/></svg>
       en bas de Safari.</div></div>
     <div class="step"><span class="num">2</span><div>Choisis <b>Sur l'écran d'accueil</b>.</div></div>
-    <div class="step"><span class="num">3</span><div>Touche <b>Ajouter</b> : l'icône voiture apparaît, l'app s'ouvre en plein écran.</div></div>
-    <p class="hint">Important : ouvre ce lien dans <b>Safari</b> (pas Instagram/Gmail), sinon « Sur l'écran d'accueil » n'apparaît pas.</p>
+    <div class="step"><span class="num">3</span><div>Touche <b>Ajouter</b> : l'icône voiture apparaît, et l'app s'ouvre en plein écran.</div></div>
+    <p class="hint">Ouvre bien ce lien dans <b>Safari</b> (pas Instagram/Gmail), sinon « Sur l'écran d'accueil » n'apparaît pas.</p>
   </div>
 
   <div class="steps" id="android">
@@ -74,10 +74,9 @@ window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferred=e;
 btn.addEventListener('click',async e=>{
   if(deferred){e.preventDefault();deferred.prompt();await deferred.userChoice;deferred=null;return;}
   if(isIOS){
-    // montre les étapes puis ouvre l'app (à épingler depuis l'app)
     e.preventDefault();
     document.getElementById('ios').classList.add('show');
-    setTimeout(()=>{location.href='app.html';},2200);
+    document.getElementById('ios').scrollIntoView({behavior:'smooth',block:'center'});
     return;
   }
   if(isAndroid){e.preventDefault();document.getElementById('android').classList.add('show');return;}
