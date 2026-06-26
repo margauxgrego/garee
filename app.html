@@ -57,7 +57,22 @@
     box-shadow:0 12px 30px -10px #00000055;opacity:0;pointer-events:none;transition:.25s;white-space:nowrap;z-index:9}
   #toast.show{opacity:1;transform:translate(-50%,0)}
   #toast.bad{background:var(--bad)}
+
+  #splash{position:fixed;inset:0;z-index:50;background:#fff;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;
+    transition:opacity .5s ease;}
+  #splash.hide{opacity:0;pointer-events:none}
+  #splash img{width:108px;height:108px;border-radius:27px;
+    box-shadow:0 20px 44px -14px #7b5cff70;animation:pop .6s ease both}
+  #splash .mg{font-size:13px;font-weight:800;letter-spacing:.28em;
+    background:linear-gradient(135deg,var(--g1),var(--g2) 55%,var(--g3));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    position:absolute;bottom:calc(40px + env(safe-area-inset-bottom));animation:fade .8s ease both .2s}
+  @keyframes pop{from{transform:scale(.7);opacity:0}to{transform:scale(1);opacity:1}}
+  @keyframes fade{from{opacity:0}to{opacity:1}}
 </style>
+
+<div id="splash"><img src="icon-512.png" alt="Garée"><span class="mg">by MG</span></div>
 
 <div class="top"><span class="dot">P</span><h1>Garée</h1><span class="tag">où suis-je</span></div>
 
@@ -132,4 +147,5 @@ function toast(msg,bad){let t=$('#toast');
   t.textContent=msg;t.className=bad?'bad':'';t.classList.add('show');
   clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),2200);}
 load();
+setTimeout(()=>{const sp=$('#splash');sp.classList.add('hide');setTimeout(()=>sp.remove(),600);},2000);
 </script>
