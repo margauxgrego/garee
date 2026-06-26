@@ -1,0 +1,107 @@
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Garée</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#ffffff">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Garée">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="icon-192.png">
+<style>
+  :root{
+    --bg:#ffffff;--ink:#15151c;--soft:#6b6b78;--hair:#ececf1;--card:#f7f7fa;
+    --g1:#ff4dd8;--g2:#7b5cff;--g3:#22d3ee;--ok:#0bb87f;--bad:#e23d5b;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%}
+  body{background:var(--bg);color:var(--ink);
+    font-family:'SF Pro Display',system-ui,sans-serif;
+    display:flex;flex-direction:column;align-items:center;
+    padding:28px 18px calc(24px + env(safe-area-inset-bottom));min-height:100%;}
+  .top{width:100%;max-width:460px;display:flex;align-items:center;gap:10px}
+  .dot{width:30px;height:30px;border-radius:9px;
+    background:linear-gradient(135deg,var(--g1),var(--g2) 55%,var(--g3));
+    display:grid;place-items:center;color:#fff;font-weight:800;font-size:17px}
+  .top h1{font-size:19px;font-weight:800;letter-spacing:-.02em}
+  .top .tag{margin-left:auto;font-size:11px;color:var(--soft);font-weight:600;text-transform:uppercase;letter-spacing:.12em}
+  .wrap{width:100%;max-width:460px;flex:1;display:flex;flex-direction:column;gap:16px;margin-top:18px}
+
+  .park{position:relative;border:none;cursor:pointer;color:#fff;
+    background:linear-gradient(135deg,var(--g1),var(--g2) 55%,var(--g3));
+    border-radius:24px;padding:32px 22px;font-family:inherit;text-align:left;overflow:hidden;
+    box-shadow:0 18px 40px -16px #7b5cff80;transition:transform .12s;}
+  .park:active{transform:scale(.985)}
+  .park.busy{opacity:.75;pointer-events:none}
+  .park .lbl{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.14em;opacity:.9}
+  .park .big{font-size:28px;font-weight:800;letter-spacing:-.03em;margin-top:5px}
+  .park .glow{position:absolute;right:-30px;top:-30px;width:160px;height:160px;border-radius:50%;
+    background:#ffffff55;filter:blur(34px)}
+
+  .saved{background:var(--card);border-radius:24px;border:1px solid var(--hair)}
+  .none{padding:34px 22px;text-align:center;color:var(--soft);font-size:14px;line-height:1.5}
+  .none b{color:var(--ink)}
+  .meta{padding:22px 20px;display:flex;flex-direction:column;gap:12px}
+  .when{font-size:12px;color:var(--soft);font-weight:600;letter-spacing:.02em}
+  .addr{font-size:21px;font-weight:800;letter-spacing:-.02em;line-height:1.25}
+  .gpsbad{font-size:13px;color:var(--bad);font-weight:700}
+  .row{display:flex;gap:10px;margin-top:6px}
+  .row a,.row button{flex:1;text-decoration:none;text-align:center;border-radius:14px;
+    padding:14px;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;border:none}
+  .map{background:var(--ink);color:#fff}
+  .del{background:#fff;color:var(--bad);border:1px solid var(--hair)}
+</style>
+
+<div class="top"><span class="dot">P</span><h1>Garée</h1><span class="tag">où suis-je</span></div>
+
+<div class="wrap">
+  <button class="park" id="park">
+    <div class="glow"></div>
+    <div class="lbl">Je me gare ici</div>
+    <div class="big" id="big">Enregistrer ma place</div>
+  </button>
+  <div class="saved" id="saved">
+    <div class="none">Aucune place enregistrée.<br><b>Appuie sur le bouton</b> en sortant de la voiture.</div>
+  </div>
+</div>
+
+<script>
+const $=s=>document.querySelector(s);
+function fmt(ts){const d=new Date(ts);
+  return d.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'})
+    +' à '+d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});}
+async function load(){let s=null;
+  try{const r=localStorage.getItem('spot');s=r?JSON.parse(r):null;}catch(e){}
+  render(s);}
+function render(s){const box=$('#saved');
+  if(!s){box.innerHTML='<div class="none">Aucune place enregistrée.<br><b>Appuie sur le bouton</b> en sortant de la voiture.</div>';return;}
+  if(s.lat==null){box.innerHTML=`<div class="meta"><div class="when">${fmt(s.ts)}</div>
+    <div class="gpsbad">GPS indisponible — autorise la localisation</div>
+    <div class="row"><button class="del" id="del">Supprimer</button></div></div>`;$('#del').onclick=del;return;}
+  const lieu=s.addr||`${s.lat.toFixed(5)}, ${s.lng.toFixed(5)}`;
+  box.innerHTML=`<div class="meta">
+      <div class="when">Garée ${fmt(s.ts)}</div>
+      <div class="addr">${lieu}</div>
+      <div class="row">
+        <a class="map" href="https://www.google.com/maps/search/?api=1&query=${s.lat},${s.lng}" target="_blank">M'y ramener</a>
+        <button class="del" id="del">Supprimer</button></div></div>`;
+  $('#del').onclick=del;}
+async function del(){try{localStorage.removeItem('spot')}catch(e){}render(null);}
+function save(s){try{localStorage.setItem('spot',JSON.stringify(s))}catch(e){}render(s);}
+async function reverse(lat,lng){try{
+  const r=await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`,{headers:{'Accept':'application/json'}});
+  const j=await r.json();const a=j.address||{};
+  const street=[a.house_number,a.road].filter(Boolean).join(' ');
+  return [street,a.city||a.town||a.village||a.suburb].filter(Boolean).join(', ')||j.display_name;
+}catch(e){return null;}}
+$('#park').onclick=()=>{
+  const btn=$('#park');btn.classList.add('busy');$('#big').textContent='Localisation…';
+  const reset=()=>{btn.classList.remove('busy');$('#big').textContent='Enregistrer ma place';};
+  const s={ts:Date.now(),lat:null,lng:null,acc:null,addr:null};
+  if(!navigator.geolocation){reset();save(s);return;}
+  navigator.geolocation.getCurrentPosition(async p=>{
+    s.lat=p.coords.latitude;s.lng=p.coords.longitude;s.acc=p.coords.accuracy;save(s);
+    s.addr=await reverse(s.lat,s.lng);reset();save(s);
+  },()=>{reset();save(s);},{enableHighAccuracy:true,timeout:8000});
+};
+load();
+</script>

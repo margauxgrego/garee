@@ -1,7 +1,7 @@
 {
   "name": "Garée",
   "short_name": "Garée",
-  "start_url": ".",
+  "start_url": "app.html",
   "display": "standalone",
   "background_color": "#1c2024",
   "theme_color": "#1c2024",
