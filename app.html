@@ -277,8 +277,14 @@ render();renderTimer();
 {const e=getExp();if(e)scheduleNotif(e);}
 setTimeout(()=>{const sp=$('#splash');sp.classList.add('hide');setTimeout(()=>sp.remove(),600);},2000);
 
-if('serviceWorker'in navigator){navigator.serviceWorker.register('sw.js').then(reg=>{
-  reg.addEventListener('updatefound',()=>{const sw=reg.installing;
-    sw&&sw.addEventListener('statechange',()=>{if(sw.state==='activated')location.reload();});});
-  reg.update();}).catch(()=>{});}
+if('serviceWorker'in navigator){
+  let reloaded=false;
+  navigator.serviceWorker.addEventListener('controllerchange',()=>{
+    if(reloaded)return;reloaded=true;location.reload();
+  });
+  navigator.serviceWorker.register('sw.js').then(reg=>{
+    reg.update();
+    setInterval(()=>reg.update(),60000);
+  }).catch(()=>{});
+}
 </script>
