@@ -69,6 +69,9 @@
     font-size:14px;border-radius:12px;padding:11px 8px;cursor:pointer}
   .presets button:active{background:var(--card)}
   .tstop{border:none;background:#fff;color:var(--bad);border:1px solid var(--hair);border-radius:12px;padding:12px;font-family:inherit;font-weight:700;cursor:pointer}
+  .tcustom{border:none;background:#fff;color:var(--g2);border:1px solid var(--hair);border-radius:12px;padding:12px;font-family:inherit;font-weight:600;cursor:pointer}
+  .tgo{border:none;color:#fff;background:linear-gradient(135deg,var(--g1),var(--g2) 55%,var(--g3));border-radius:12px;padding:13px;font-family:inherit;font-weight:700;cursor:pointer}
+  .tend{font-size:13px;color:var(--soft);font-weight:600;margin-top:-4px}
 
   /* overlays */
   .ov{position:fixed;inset:0;z-index:40;background:#fff;display:none;flex-direction:column;padding:28px 22px calc(28px + env(safe-area-inset-bottom));overflow:auto}
@@ -143,6 +146,7 @@
   <div class="timer" id="timer" style="display:none">
     <div class="ttl">Minuteur de stationnement</div>
     <div class="cd" id="cd">--:--</div>
+    <div class="tend" id="tend"></div>
     <button class="tstop" id="tstop">Arrêter le minuteur</button>
   </div>
   <div class="timer" id="timerset">
@@ -150,6 +154,16 @@
     <div class="presets">
       <button data-m="30">30 min</button><button data-m="60">1 h</button>
       <button data-m="120">2 h</button><button data-m="240">4 h</button>
+    </div>
+    <button class="tcustom" id="tcustom">Heure de fin personnalisée</button>
+    <div id="custom" style="display:none;flex-direction:column;gap:10px">
+      <div style="display:flex;gap:10px">
+        <div style="flex:1"><label style="display:block;font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--soft);font-weight:700;margin-bottom:6px">Début</label>
+          <input id="t_start" type="time" style="width:100%;font-family:inherit;font-size:17px;font-weight:600;padding:11px;border:1px solid var(--hair);border-radius:12px;outline:none;color:var(--ink)"></div>
+        <div style="flex:1"><label style="display:block;font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--soft);font-weight:700;margin-bottom:6px">Fin</label>
+          <input id="t_end" type="time" style="width:100%;font-family:inherit;font-size:17px;font-weight:600;padding:11px;border:1px solid var(--hair);border-radius:12px;outline:none;color:var(--ink)"></div>
+      </div>
+      <button class="tgo" id="t_go">Lancer le minuteur</button>
     </div>
   </div>
 </div>
@@ -226,38 +240,75 @@ $('#f_save').onclick=()=>{
 };
 
 /* ---- Minuteur de stationnement ---- */
-let tick;
+let tick;const _timeouts=[];
 function getExp(){const v=localStorage.getItem('exp');return v?+v:0;}
-function setTimer(min){
-  const exp=Date.now()+min*60000;localStorage.setItem('exp',exp);
-  if('Notification'in window&&Notification.permission==='default')Notification.requestPermission();
-  scheduleNotif(exp);renderTimer();toast(`Minuteur lancé : ${min} min`);
+
+// rappels (en minutes avant la fin) selon la durée totale
+function reminders(totalMin){
+  const r=[];
+  if(totalMin>120)r.push(60);
+  else if(totalMin>60)r.push(30);
+  else if(totalMin>30)r.push(15);
+  if(totalMin>10)r.push(10);
+  return r;
 }
-function stopTimer(){localStorage.removeItem('exp');clearTimeout(window._n15);clearTimeout(window._n0);renderTimer();}
-function scheduleNotif(exp){
-  clearTimeout(window._n15);clearTimeout(window._n0);
-  const t15=exp-15*60000-Date.now(),t0=exp-Date.now();
-  if(t15>0)window._n15=setTimeout(()=>notify('Ton stationnement expire dans 15 minutes.'),t15);
-  if(t0>0)window._n0=setTimeout(()=>notify('Ton stationnement a expiré.'),t0);
+function label(min){return min>=60?(min/60)+' h':min+' min';}
+
+function setTimer(min){startTimer(Date.now()+min*60000,min);}
+function startTimer(exp,totalMin){
+  if(exp<=Date.now()){toast('Heure de fin déjà passée',true);return;}
+  localStorage.setItem('exp',exp);localStorage.setItem('total',totalMin);
+  if('Notification'in window&&Notification.permission==='default')Notification.requestPermission();
+  scheduleNotif(exp,totalMin);renderTimer();
+  toast('Minuteur lancé jusqu’à '+new Date(exp).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}));
+}
+function stopTimer(){localStorage.removeItem('exp');localStorage.removeItem('total');
+  _timeouts.forEach(clearTimeout);_timeouts.length=0;renderTimer();}
+function scheduleNotif(exp,totalMin){
+  _timeouts.forEach(clearTimeout);_timeouts.length=0;
+  reminders(totalMin).forEach(mB=>{
+    const at=exp-mB*60000-Date.now();
+    if(at>0)_timeouts.push(setTimeout(()=>notify('Il reste '+label(mB)+' de stationnement.'),at));
+  });
+  const t0=exp-Date.now();
+  if(t0>0)_timeouts.push(setTimeout(()=>notify('Ton stationnement a expiré.'),t0));
 }
 function notify(msg){
   if('Notification'in window&&Notification.permission==='granted'){new Notification('Garée',{body:msg,icon:'icon-192.png'});}
   toast(msg,true);
 }
 function renderTimer(){
-  const exp=getExp();const set=$('#timerset'),box=$('#timer'),cd=$('#cd');
+  const exp=getExp();const set=$('#timerset'),box=$('#timer'),cd=$('#cd'),tend=$('#tend');
   if(!exp){box.style.display='none';set.style.display='';return;}
   box.style.display='';set.style.display='none';
+  tend.textContent='Fin à '+new Date(exp).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
   clearInterval(tick);
   const upd=()=>{let ms=exp-Date.now();
-    if(ms<=0){cd.textContent='Expiré';cd.className='cd over';return;}
-    const m=Math.floor(ms/60000),sec=Math.floor(ms/1000)%60;
-    cd.textContent=String(m).padStart(2,'0')+':'+String(sec).padStart(2,'0');
-    cd.className='cd'+(m<15?' warn':'');};
+    if(ms<=0){cd.textContent='Expiré';cd.className='cd over';clearInterval(tick);return;}
+    const h=Math.floor(ms/3600000),m=Math.floor(ms/60000)%60,sec=Math.floor(ms/1000)%60;
+    cd.textContent=(h?h+':':'')+String(m).padStart(2,'0')+':'+String(sec).padStart(2,'0');
+    cd.className='cd'+(ms<10*60000?' warn':'');};
   upd();tick=setInterval(upd,1000);
 }
 document.querySelectorAll('.presets button').forEach(b=>b.onclick=()=>setTimer(+b.dataset.m));
 $('#tstop').onclick=stopTimer;
+
+// mode personnalisé (heure de début / fin)
+$('#tcustom').onclick=()=>{
+  const c=$('#custom');const show=c.style.display!=='flex';c.style.display=show?'flex':'none';
+  if(show){const now=new Date();$('#t_start').value=now.toTimeString().slice(0,5);
+    const later=new Date(now.getTime()+3600000);$('#t_end').value=later.toTimeString().slice(0,5);}
+};
+$('#t_go').onclick=()=>{
+  const sv=$('#t_start').value,ev=$('#t_end').value;
+  if(!ev){toast('Choisis l’heure de fin',true);return;}
+  const now=new Date();
+  const mk=v=>{const [h,m]=v.split(':').map(Number);const d=new Date();d.setHours(h,m,0,0);return d;};
+  let start=sv?mk(sv):now, end=mk(ev);
+  if(end<=start)end=new Date(end.getTime()+86400000); // fin le lendemain
+  const totalMin=Math.round((end-start)/60000);
+  startTimer(end.getTime(),totalMin);$('#custom').style.display='none';
+};
 
 /* ---- Prénom + accueil ---- */
 function greet(n){if(n)$('#hello').textContent='Bonjour '+n+' 👋';}
@@ -274,7 +325,7 @@ function toast(msg,bad){let t=$('#toast');
   clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),2200);}
 
 render();renderTimer();
-{const e=getExp();if(e)scheduleNotif(e);}
+{const e=getExp();if(e)scheduleNotif(e,+(localStorage.getItem('total')||0));}
 setTimeout(()=>{const sp=$('#splash');sp.classList.add('hide');setTimeout(()=>sp.remove(),600);},2000);
 
 if('serviceWorker'in navigator){
