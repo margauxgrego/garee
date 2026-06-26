@@ -45,10 +45,13 @@
   .addr{font-size:21px;font-weight:800;letter-spacing:-.02em;line-height:1.25}
   .gpsbad{font-size:13px;color:var(--bad);font-weight:700}
   .row{display:flex;gap:10px;margin-top:6px}
-  .row a,.row button{flex:1;text-decoration:none;text-align:center;border-radius:14px;
-    padding:14px;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;border:none}
-  .map{background:var(--ink);color:#fff}
-  .del{background:#fff;color:var(--bad);border:1px solid var(--hair)}
+  .row a,.row button{text-decoration:none;text-align:center;border-radius:14px;
+    padding:14px;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;border:none;
+    display:flex;align-items:center;justify-content:center}
+  .map{flex:1;background:var(--ink);color:#fff}
+  .share{width:50px;flex:none;background:linear-gradient(135deg,var(--g1),var(--g2) 55%,var(--g3));color:#fff}
+  .share svg,.del svg{width:20px;height:20px}
+  .del{width:50px;flex:none;background:#fff;color:var(--bad);border:1px solid var(--hair)}
   #toast{position:fixed;left:50%;bottom:calc(28px + env(safe-area-inset-bottom));transform:translate(-50%,20px);
     background:#15151c;color:#fff;font-size:14px;font-weight:700;padding:13px 20px;border-radius:14px;
     box-shadow:0 12px 30px -10px #00000055;opacity:0;pointer-events:none;transition:.25s;white-space:nowrap;z-index:9}
@@ -81,16 +84,31 @@ function render(s){const box=$('#saved');
   if(!s){box.innerHTML='<div class="none">Aucune place enregistrée.<br><b>Appuie sur le bouton</b> en sortant de la voiture.</div>';return;}
   if(s.lat==null){box.innerHTML=`<div class="meta"><div class="when">${fmt(s.ts)}</div>
     <div class="gpsbad">GPS indisponible — autorise la localisation</div>
-    <div class="row"><button class="del" id="del">Supprimer</button></div></div>`;$('#del').onclick=del;return;}
+    <div class="row"><button class="del" id="del" style="width:100%" aria-label="Supprimer">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg></button></div></div>`;$('#del').onclick=del;return;}
   const lieu=s.addr||`${s.lat.toFixed(5)}, ${s.lng.toFixed(5)}`;
   box.innerHTML=`<div class="meta">
       <div class="when">Garée ${fmt(s.ts)}</div>
       <div class="addr">${lieu}</div>
       <div class="row">
         <a class="map" href="https://www.google.com/maps/search/?api=1&query=${s.lat},${s.lng}" target="_blank">M'y ramener</a>
-        <button class="del" id="del">Supprimer</button></div></div>`;
-  $('#del').onclick=del;}
+        <button class="share" id="share" aria-label="Partager">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg>
+        </button>
+        <button class="del" id="del" aria-label="Supprimer">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg>
+        </button></div></div>`;
+  $('#del').onclick=del;
+  $('#share').onclick=()=>share(s);}
 async function del(){try{localStorage.removeItem('spot')}catch(e){}render(null);}
+async function share(s){
+  const url=`https://www.google.com/maps/search/?api=1&query=${s.lat},${s.lng}`;
+  const lieu=s.addr||`${s.lat.toFixed(5)}, ${s.lng.toFixed(5)}`;
+  const text=`Je suis garée ici : ${lieu}\n${url}`;
+  if(navigator.share){try{await navigator.share({title:'Ma place de parking',text,url});return;}catch(e){if(e.name==='AbortError')return;}}
+  try{await navigator.clipboard.writeText(text);toast('Lien copié ✓');}
+  catch(e){location.href=`sms:?&body=${encodeURIComponent(text)}`;}
+}
 function save(s){try{localStorage.setItem('spot',JSON.stringify(s))}catch(e){}render(s);}
 async function reverse(lat,lng){try{
   const r=await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`,{headers:{'Accept':'application/json'}});
